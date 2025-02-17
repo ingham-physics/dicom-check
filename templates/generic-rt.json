@@ -1,0 +1,86 @@
+{
+    "project": "Generic RT",
+    "description": "A generic RT template",
+    "version": "1.0.0",
+    "expected_series": {
+        "Planning CT": {
+            "description": "Planning CT",
+            "modality": "CT"
+        },
+        "RT Plan": {
+            "description": "RT Plan",
+            "modality": "RTPLAN",
+            "referencedSeries": "RT Structure Set"
+        },
+        "RT Structure Set": {
+            "description": "RT Structure Set",
+            "modality": "RTSTRUCT",
+            "referencedSeries": "Planning CT"
+        },
+        "RT Dose": {
+            "description": "RT Dose",
+            "modality": "RTDOSE",
+            "referencedSeries": "RT Plan"
+        }
+    },
+    "checks": [
+        {
+            "description": "Check if Planning CT is present",
+            "function": "is_series_present",
+            "series": "Planning CT",
+            "critical": true
+        },
+        {
+            "description": "Check we have exactly one Planning CT",
+            "function": "check_series_count",
+            "args": {
+                "n": 1,
+                "op": "eq"
+            },
+            "series": "Planning CT",
+            "critical": false
+        },
+        {
+            "description": "Check if RT Structure Set is present",
+            "function": "is_series_present",
+            "series": "RT Structure Set",
+            "critical": true
+        },
+        {
+            "description": "Check we have exactly one RT Structure Set",
+            "function": "check_series_count",
+            "args": {
+                "n": 1,
+                "op": "eq"
+            },
+            "series": "RT Structure Set",
+            "critical": false
+        },
+        {
+            "description": "Check expected structures present in structure set",
+            "series": "RT Structure Set",
+            "critical": true,
+            "function": "check_structure_present",
+            "args": {
+                "structures": {
+                    "CTV": [
+                        "CTV",
+                        "ctv"
+                    ]
+                }
+            }
+        },
+        {
+            "description": "Check if RT Plan is present",
+            "function": "is_series_present",
+            "series": "RT Plan",
+            "critical": true
+        },
+        {
+            "description": "Check if RT Dose is present",
+            "function": "is_series_present",
+            "series": "RT Dose",
+            "critical": true
+        }
+    ]
+}
