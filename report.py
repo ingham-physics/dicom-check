@@ -74,6 +74,10 @@ def generate_series_json(df: pd.DataFrame, meta: Union[List[str], None] = None) 
         if len(df_series["date_time"].unique()) > 1:
             raise ValueError(f"Series {series_uid} has multiple dates")
 
+        date_time = df_series["date_time"].unique()
+        if len(date_time) > 1:
+            date_time = date_time[0].isoformat()
+
         # Check all instances in series have the same frame of reference
         if len(df_series["for_uid"].unique()) > 1:
             raise ValueError(f"Series {series_uid} has multiple frame of references")
@@ -85,7 +89,7 @@ def generate_series_json(df: pd.DataFrame, meta: Union[List[str], None] = None) 
         entry = {
             "series_uid": series_uid,
             "modality": df_series["modality"].iloc[0],
-            "date_time": df_series["date_time"].iloc[0].isoformat(),
+            "date_time": date_time,
             "frame_of_reference": parse_nan_value(df_series["for_uid"].iloc[0]),
             "referenced_series": parse_nan_value(df_series["referenced_uid"].iloc[0]),
             "instance_count": len(df_series["sop_instance_uid"]),
