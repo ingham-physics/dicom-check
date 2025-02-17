@@ -2,7 +2,17 @@
 
 A tool to index DICOM data and perform some checks for data completeness.
 
+> This tool is under development and is intended for experimentation use only.
+
 ## Usage
+
+### Install Requirements
+
+You can pip install the requirements.txt file to install all dependencies:
+
+```bash
+pip install -r requirements.txt
+```
 
 ### Test data
 
@@ -17,7 +27,7 @@ python test.py
 Indexes DICOM data in a directory and produces a report with DICOM series found.
 
 ```bash
-python preprocess.py testdata/HNSCC/HNSCC-01-0176 -t templates/generic-rt.json -r pdf
+python preprocess.py -t templates/generic-rt.json -r pdftestdata/HNSCC/HNSCC-01-0176
 ```
 
 For all options use the command line interface help:
@@ -31,7 +41,7 @@ python preprocess.py --help
 Maches DICOM series to a template provided.
 
 ```bash
-python match.py testdata/HNSCC/HNSCC-01-0176 -t templates/generic-rt.json -r pdf
+python match.py -t templates/generic-rt.json -r pdf testdata/HNSCC/HNSCC-01-0176
 ```
 
 For all options use the command line interface help:
@@ -45,13 +55,13 @@ python match.py --help
 Peforms checks defined in template against series data.
 
 ```bash
-python check.py testdata/HNSCC/HNSCC-01-0176 -t templates/generic-rt.json -r pdf
+python check.py -t templates/generic-rt.json -r pdftestdata/HNSCC/HNSCC-01-0176
 ```
 
 For all options use the command line interface help:
 
 ```bash
-python match.py --help
+python check.py --help
 ```
 
 ### Run on all sub-directories
@@ -59,7 +69,7 @@ python match.py --help
 Run all steps on each sub-directory of a directory:
 
 ```bash
-python run.py testdata/HNSCC -t templates/generic-rt.json -r pdf
+python run.py -t templates/generic-rt.json -r pdftestdata/HNSCC
 ```
 
 Check the `testdata/HNSCC/check_results.csv` for a summary of all checks performed.
