@@ -63,7 +63,7 @@ def perform_checks(directory: Path, template: str, report_format: Optional[str] 
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Preprocess DICOM files.")
+    parser = argparse.ArgumentParser(description="Perform checks on DICOM series.")
     parser.add_argument(
         "directory",
         type=Path,

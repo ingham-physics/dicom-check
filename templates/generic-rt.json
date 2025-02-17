@@ -69,8 +69,7 @@
             "function": "check_structures_present",
             "args": {
                 "structures": {
-                    "Final ISO": [
-                    ]
+                    "CTV": []
                 },
                 "case_sensitive": false
             }

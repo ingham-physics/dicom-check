@@ -125,7 +125,7 @@ def match_series_to_template(directory: Path, template: str, report_format: Opti
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="Preprocess DICOM files.")
+    parser = argparse.ArgumentParser(description="Match series to template.")
     parser.add_argument(
         "directory",
         type=Path,

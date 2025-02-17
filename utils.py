@@ -26,7 +26,6 @@ def download_file(url: str, expected_hash: str, output_path: Path):
         expected_hash (str): The expected hash of the file.
         output_path (Path): The path to save the downloaded file.
     """
-    
 
     response = requests.get(url, timeout=10)
     response.raise_for_status()
@@ -63,3 +62,25 @@ def download_font_pack(output_path: Path):
 
     # Remove zip file
     output_path.joinpath("font_pack.zip").unlink()
+
+def download_test_data(output_path: Path):
+    """Download test data for the application.
+
+    Args:
+        output_path (Path): The path to save the downloaded test data.
+    """
+
+    output_path.mkdir(exist_ok=True)
+
+    download_file(
+        "https://zenodo.org/record/5276878/files/HNSCC.zip",
+        "6332d59406978a92f57d15da84f2e143",
+        output_path.joinpath("HNSCC.zip")
+    )
+
+    # Unzip file
+    with zipfile.ZipFile(output_path.joinpath("HNSCC.zip"), "r") as zip_ref:
+        zip_ref.extractall(output_path)
+
+    # Remove zip file
+    output_path.joinpath("HNSCC.zip").unlink()
