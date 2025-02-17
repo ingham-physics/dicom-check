@@ -69,16 +69,6 @@ def generate_series_json(df: pd.DataFrame, meta: Union[List[str], None] = None) 
         # Check all the series have the same modality
         if len(df_series["modality"].unique()) > 1:
             raise ValueError(f"Series {series_uid} has multiple modalities")
-
-        # Check all the series have the same date
-        if len(df_series["date_time"].unique()) > 1:
-            raise ValueError(f"Series {series_uid} has multiple dates")
-
-        date_time = df_series["date_time"].unique()
-        date_time = [dt.isoformat() for dt in date_time if not pd.isna(dt)]
-        if len(date_time) > 1:
-            date_time = date_time[0]
-
         # Check all instances in series have the same frame of reference
         if len(df_series["for_uid"].unique()) > 1:
             raise ValueError(f"Series {series_uid} has multiple frame of references")
@@ -86,6 +76,11 @@ def generate_series_json(df: pd.DataFrame, meta: Union[List[str], None] = None) 
         # Check all instances in series have the same referenced series
         if len(df_series["referenced_uid"].unique()) > 1:
             raise ValueError(f"Series {series_uid} has multiple referenced series")
+
+        date_time = df_series["date_time"].unique()
+        date_time = [dt.isoformat() for dt in date_time if not pd.isna(dt)]
+        if len(date_time) > 1:
+            date_time = date_time[0]
 
         entry = {
             "series_uid": series_uid,
