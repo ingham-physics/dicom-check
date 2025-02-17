@@ -75,8 +75,9 @@ def generate_series_json(df: pd.DataFrame, meta: Union[List[str], None] = None) 
             raise ValueError(f"Series {series_uid} has multiple dates")
 
         date_time = df_series["date_time"].unique()
+        date_time = [dt.isoformat() for dt in date_time if not pd.isna(dt)]
         if len(date_time) > 1:
-            date_time = date_time[0].isoformat()
+            date_time = date_time[0]
 
         # Check all instances in series have the same frame of reference
         if len(df_series["for_uid"].unique()) > 1:
