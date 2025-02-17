@@ -106,6 +106,9 @@ def generate_series_json(df: pd.DataFrame, meta: Union[List[str], None] = None) 
             if len(slice_diffs) > 1:
                 entry["consistent_slice_spacing"] = False
                 entry["slice_spacing"] = slice_diffs.tolist()
+            if len(slice_diffs) == 0:
+                entry["consistent_slice_spacing"] = False
+                entry["slice_spacing"] = np.nan
             else:
                 entry["consistent_slice_spacing"] = True
                 entry["slice_spacing"] = slice_diffs[0]
