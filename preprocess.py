@@ -10,6 +10,7 @@ import numpy as np
 import tqdm
 
 from report import generate_series_report, generate_series_json
+from utils import load_template
 
 logger = logging.getLogger(__name__)
 
@@ -259,7 +260,7 @@ def index_dicom_files(
 
 def preprocess(
     input_directory: Union[Path, list],
-    meta: Union[List[str], None] = None,
+    template: Union[str, None] = None,
     enforce_dcm_ext: bool = True,
     report_format: Optional[str] = None,
     output_directory: Optional[Path] = None,
@@ -268,7 +269,7 @@ def preprocess(
 
     Args:
         input_directory (pathlib.Path|list): The directory to preprocess.
-        meta (list): Additional metadata to include in the preprocessing.
+        template (str): Path to template file defining meta fields.
         enforce_dcm_ext (bool): Enforce DICOM file extension.
         report_format (str): The format of the report to generate (pdf or html). If not
             provided, no report is generated.
@@ -278,8 +279,11 @@ def preprocess(
     Returns:
         pd.DataFrame: DataFrame of indexed files.
     """
-    if meta is None:
-        meta = []
+
+    meta = []
+    if template is not None:
+        template = load_template(template)
+        meta = template.get("meta", [])
 
     if output_directory is None:
         output_directory = input_directory
@@ -331,11 +335,10 @@ if __name__ == "__main__":
         help="The path to the directory containing the DICOM files.",
     )
     parser.add_argument(
-        "-m",
-        "--meta",
+        "-t",
+        "--template",
         type=str,
-        nargs="+",
-        help="Additional metadata (DICOM headers) to include in the preprocessed DataFrame.",
+        help="Template JSON file defining meta fields to pull.",
     )
     parser.add_argument(
         "--enforce_dcm_ext",
@@ -363,7 +366,7 @@ if __name__ == "__main__":
 
     preprocess(
         input_directory=args.input_directory,
-        meta=args.meta,
+        template=args.template,
         enforce_dcm_ext=args.enforce_dcm_ext,
         report_format=args.report_format,
         output_directory=args.output_directory,

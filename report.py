@@ -7,11 +7,14 @@ import pandas as pd
 import numpy as np
 import pydicom
 
+from utils import download_font_pack
+
 logger = logging.getLogger(__name__)
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s -%(levelname)s - %(message)s"
 )
+
 
 def fetch_structure_names(ds: pydicom.Dataset) -> List[str]:
     """Fetch the structure names from a DICOM RTSTRUCT file.
@@ -29,7 +32,6 @@ def fetch_structure_names(ds: pydicom.Dataset) -> List[str]:
         structure_names.append(item.ROIName)
 
     return structure_names
-
 
 
 def parse_nan_value(value: object) -> Optional[object]:
@@ -136,8 +138,12 @@ def generate_series_json(df: pd.DataFrame, meta: Union[List[str], None] = None) 
 
     return series_json
 
+
 def generate_series_report(
-    series_json: dict, output_directory: Path, report_format: str = "pdf", meta: List[str] = None
+    series_json: dict,
+    output_directory: Path,
+    report_format: str = "pdf",
+    meta: List[str] = None,
 ):
     """Generate a report for the series information.
 
@@ -165,13 +171,17 @@ def generate_series_report(
 
         pdf = FPDF()
         pdf.set_auto_page_break(auto=True, margin=15)
+        if not Path("fonts/DejaVuSansCondensed.ttf").exists():
+            download_font_pack(Path("."))
+        pdf.add_font("DejaVu", "", "font/DejaVuSansCondensed.ttf", uni=True)
+        pdf.add_font("DejaVuBold", "", "font/DejaVuSansCondensed-Bold.ttf", uni=True)
         pdf.add_page()
-        pdf.set_font("helvetica", size=12)
+        pdf.set_font("DejaVu", size=12)
 
         pdf.cell(
             200,
             5,
-            f"Series Report for {series_json['patient_id']}",
+            f"DICOM Series Report for {series_json['patient_id']}",
             new_x=XPos.LMARGIN,
             new_y=YPos.NEXT,
             align="C",
@@ -179,7 +189,97 @@ def generate_series_report(
 
         pdf.ln(5)
 
-        pdf.set_font("helvetica", size=10)
+        if "checks" in series_json:
+            pdf.set_font("DejaVu", size=14)
+            pdf.cell(
+                200,
+                5,
+                "Check results",
+                new_x=XPos.LMARGIN,
+                new_y=YPos.NEXT,
+            )
+            pdf.set_font("DejaVuBold", size=10)
+
+            pdf.cell(
+                200,
+                5,
+                "Critical checks",
+                new_x=XPos.LMARGIN,
+                new_y=YPos.NEXT,
+            )
+            pdf.set_font("DejaVu", size=10)
+
+            for check in series_json["checks"]:
+                if not check["critical"]:
+                    continue
+
+                mark = "✓" if check["passed"] else "✗"
+
+                pdf.cell(
+                    200,
+                    5,
+                    f" {mark} {check['description']}: {'Passed' if check['passed'] else 'Failed'}",
+                    new_x=XPos.LMARGIN,
+                    new_y=YPos.NEXT,
+                )
+                if check["output"]:
+                    for part in check["output"].split("\n"):
+                        if len(part) == 0:
+                            continue
+                        pdf.cell(
+                            200,
+                            5,
+                            f"    {part}",
+                            new_x=XPos.LMARGIN,
+                            new_y=YPos.NEXT,
+                        )
+            pdf.set_font("DejaVuBold", size=10)
+
+            pdf.cell(
+                200,
+                5,
+                "Other checks",
+                new_x=XPos.LMARGIN,
+                new_y=YPos.NEXT,
+            )
+            pdf.set_font("DejaVu", size=10)
+
+            for check in series_json["checks"]:
+                if check["critical"]:
+                    continue
+
+                mark = "✓" if check["passed"] else "✗"
+
+                pdf.cell(
+                    200,
+                    5,
+                    f" {mark} {check['description']}: {'Passed' if check['passed'] else 'Failed'}",
+                    new_x=XPos.LMARGIN,
+                    new_y=YPos.NEXT,
+                )
+                if check["output"]:
+                    for part in check["output"].split("\n"):
+                        if len(part) == 0:
+                            continue
+                        pdf.cell(
+                            200,
+                            5,
+                            f"    {part}",
+                            new_x=XPos.LMARGIN,
+                            new_y=YPos.NEXT,
+                        )
+
+            pdf.ln(5)
+
+        pdf.set_font("DejaVu", size=14)
+        pdf.cell(
+            200,
+            5,
+            "Series information",
+            new_x=XPos.LMARGIN,
+            new_y=YPos.NEXT,
+        )
+        pdf.set_font("DejaVu", size=10)
 
         for series in series_json["series"]:
             pdf.cell(
@@ -190,7 +290,7 @@ def generate_series_report(
                 new_y=YPos.NEXT,
             )
             if "match" in series:
-                pdf.set_font("helvetica", style="B", size=10)
+                pdf.set_font("DejaVuBold", size=10)
                 pdf.cell(
                     200,
                     5,
@@ -198,7 +298,7 @@ def generate_series_report(
                     new_x=XPos.LMARGIN,
                     new_y=YPos.NEXT,
                 )
-                pdf.set_font("helvetica", size=10)
+                pdf.set_font("DejaVu", size=10)
             pdf.cell(
                 200,
                 5,
@@ -270,8 +370,6 @@ def generate_series_report(
                 )
 
             if meta:
-                print(meta)
-                print(series.keys())
                 for m in meta:
                     pdf.cell(
                         200,
@@ -288,20 +386,50 @@ def generate_series_report(
     elif report_format == "html":
         try:
             import dominate  # pylint: disable=import-outside-toplevel
-            from dominate.tags import h1, h2, p, table, tr, td, b  # pylint: disable=import-outside-toplevel
+            from dominate.tags import h1, h2, h3, p, table, tr, td, b  # pylint: disable=import-outside-toplevel
         except ImportError:
             logger.error(
                 "The dominate package is required for HTML output: pip install dominate"
             )
             return
 
-        doc = dominate.document(title="Series Report")
+        doc = dominate.document(title="DICOM Series Report")
 
         with doc:
             h1("Series Report")
 
+            if "checks" in series_json:
+                h2("Check results")
+                h3("Critical checks")
+                for check in series_json["checks"]:
+                    if not check["critical"]:
+                        continue
+
+                    mark = "✓" if check["passed"] else "✗"
+                    p(f"{mark} {check['description']}: {'Passed' if check['passed'] else 'Failed'}")
+                    if check["output"]:
+                        for part in check["output"].split("\n"):
+                            if len(part) == 0:
+                                continue
+                            p(f"    {part}")
+
+                h3("Other checks")
+                for check in series_json["checks"]:
+                    if check["critical"]:
+                        continue
+
+                    mark = "✓" if check["passed"] else "✗"
+                    p(f"{mark} {check['description']}: {'Passed' if check['passed'] else 'Failed'}")
+                    if check["output"]:
+                        for part in check["output"].split("\n"):
+                            if len(part) == 0:
+                                continue
+                            p(f"    {part}")
+
+            h2("Series Information")
+
             for series in series_json["series"]:
-                h2(f"Series UID: {series['series_uid']}")
+                h3(f"Series UID: {series['series_uid']}")
                 if "match" in series:
                     p(b(f"Match: {series['match']}"))
 

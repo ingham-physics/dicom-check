@@ -2,6 +2,12 @@
     "project": "Generic RT",
     "description": "A generic RT template",
     "version": "1.0.0",
+    "meta": [
+        "SeriesDescription",
+        "StudyDescription",
+        "StudyInstanceUID",
+        "DoseSummationType"
+    ],
     "expected_series": {
         "Planning CT": {
             "description": "Planning CT",
@@ -60,14 +66,13 @@
             "description": "Check expected structures present in structure set",
             "series": "RT Structure Set",
             "critical": true,
-            "function": "check_structure_present",
+            "function": "check_structures_present",
             "args": {
                 "structures": {
-                    "CTV": [
-                        "CTV",
-                        "ctv"
+                    "Final ISO": [
                     ]
-                }
+                },
+                "case_sensitive": false
             }
         },
         {
@@ -81,6 +86,64 @@
             "function": "is_series_present",
             "series": "RT Dose",
             "critical": true
+        },
+        {
+            "description": "Check if RT Dose DoseSummationType is PLAN",
+            "function": "check_meta_value",
+            "args": {
+                "key": "DoseSummationType",
+                "value": "PLAN"
+            },
+            "series": "RT Dose",
+            "critical": false
+        },
+        {
+            "description": "Check all series in same Frame of Reference",
+            "function": "check_all_in_same",
+            "args": {
+                "key": "frame_of_reference"
+            },
+            "series": ["Planning CT", "RT Structure Set", "RT Plan", "RT Dose"],
+            "critical": false
+        },
+        {
+            "description": "Check all series in same Study",
+            "function": "check_all_in_same",
+            "args": {
+                "key": "StudyInstanceUID"
+            },
+            "series": ["Planning CT", "RT Structure Set", "RT Plan", "RT Dose"],
+            "critical": false
+        },
+        {
+            "description": "Check RTSTRUCT and Planning CT are linked",
+            "function": "check_linked",
+            "args": {
+                "from_name": "RT Structure Set",
+                "to_name": "Planning CT"
+            },
+            "series": ["Planning CT", "RT Structure Set"],
+            "critical": false
+        },
+        {
+            "description": "Check RTPLAN and RTSTRUCT are linked",
+            "function": "check_linked",
+            "args": {
+                "from_name": "RT Plan",
+                "to_name": "RT Structure Set"
+            },
+            "series": ["RT Structure Set", "RT Plan"],
+            "critical": false
+        },
+        {
+            "description": "Check RTDOSE and RTPLAN are linked",
+            "function": "check_linked",
+            "args": {
+                "from_name": "RT Dose",
+                "to_name": "RT Plan"
+            },
+            "series": ["RT Plan", "RT Dose"],
+            "critical": false
         }
     ]
 }

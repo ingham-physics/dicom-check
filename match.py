@@ -6,19 +6,7 @@ import networkx as nx
 import pandas as pd
 
 from report import generate_series_report
-
-def load_template(template_path: Path) -> dict:
-    """Load a JSON template file.
-
-    Args:
-        template_path (Path): Path to the template file.
-
-    Returns:
-        dict: The loaded template.
-    """
-    with open(template_path, "r", encoding="utf-8") as file:
-        return json.load(file)
-
+from utils import load_template
 
 def match_series_to_template(directory: Path, template: str, report_format: Optional[str] = None):
     """Match series in a directory to a template.
@@ -132,7 +120,7 @@ def match_series_to_template(directory: Path, template: str, report_format: Opti
         json.dump(series_json, f, indent=2)
 
     if report_format:
-        generate_series_report(series_json, directory, report_format, [])
+        generate_series_report(series_json, directory, report_format=report_format, meta=template["meta"])
 
 if __name__ == "__main__":
     import argparse
