@@ -27,7 +27,7 @@ python test.py
 Indexes DICOM data in a directory and produces a report with DICOM series found.
 
 ```bash
-python preprocess.py -t templates/generic-rt.json -r pdftestdata/HNSCC/HNSCC-01-0176
+python preprocess.py -t templates/generic-rt.json -r pdf testdata/HNSCC/HNSCC-01-0176
 ```
 
 For all options use the command line interface help:
@@ -55,7 +55,7 @@ python match.py --help
 Peforms checks defined in template against series data.
 
 ```bash
-python check.py -t templates/generic-rt.json -r pdftestdata/HNSCC/HNSCC-01-0176
+python check.py -t templates/generic-rt.json -r pdf testdata/HNSCC/HNSCC-01-0176
 ```
 
 For all options use the command line interface help:
@@ -69,7 +69,7 @@ python check.py --help
 Run all steps on each sub-directory of a directory:
 
 ```bash
-python run.py -t templates/generic-rt.json -r pdftestdata/HNSCC
+python run.py -t templates/generic-rt.json -r pdf testdata/HNSCC
 ```
 
 Check the `testdata/HNSCC/check_results.csv` for a summary of all checks performed.
