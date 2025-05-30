@@ -27,15 +27,15 @@ def test_run_on_all_subdirectories(
     )
 
     result_df = pd.read_csv("testdata/HNSCC/check_results.csv")
+    result_df = result_df.sort_values("directory").reset_index(drop=True)
 
     # Check results
     assert len(result_df["directory"].unique()) == 3
     assert result_df["Check if Planning CT is present"].tolist() == [True, True, True]
-
     assert result_df["Check we have exactly one Planning CT"].tolist() == [
         True,
-        True,
         False,
+        True,
     ]
     assert result_df["Check if RT Structure Set is present"].tolist() == [
         True,
@@ -44,8 +44,8 @@ def test_run_on_all_subdirectories(
     ]
     assert result_df["Check we have exactly one RT Structure Set"].tolist() == [
         True,
-        True,
         False,
+        True,
     ]
     assert result_df["Check expected structures present in structure set"].tolist() == [
         False,
@@ -62,10 +62,10 @@ def test_run_on_all_subdirectories(
     ]
     assert result_df["Check all series in same Frame of Reference"].tolist() == [
         True,
-        True,
         False,
+        True,
     ]
-    assert result_df["Check all series in same Study"].tolist() == [True, True, False]
+    assert result_df["Check all series in same Study"].tolist() == [True, False, True]
     assert result_df["Check RTSTRUCT and Planning CT are linked"].tolist() == [
         True,
         True,
@@ -73,8 +73,8 @@ def test_run_on_all_subdirectories(
     ]
     assert result_df["Check RTPLAN and RTSTRUCT are linked"].tolist() == [
         True,
-        True,
         False,
+        True,
     ]
     assert result_df["Check RTDOSE and RTPLAN are linked"].tolist() == [
         True,
