@@ -153,9 +153,9 @@ def test_generate_series_json_unsuccessful(template_file, dicom_file):
         with pytest.raises(ValueError) as exc_info:
             generate_series_json(df=dicom_df, meta=meta)
 
-        assert f"Series {list(dicom_df['series_id'])[0]}" + message in str(
-            exc_info.value
-        )
+            assert f"Series {list(dicom_df['series_id'])[0]}" + message in str(
+                exc_info.value
+            )
 
 
 # ID010
