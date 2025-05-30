@@ -4,3 +4,4 @@ tqdm>=4.66.1
 fpdf2>=2.8.2
 requests>=2.27.1
 networkx==3.0
+pytest
