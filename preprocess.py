@@ -352,14 +352,14 @@ if __name__ == "__main__":
         type=str,
         choices=["pdf", "html"],
         help="The format of the report to generate (pdf or html). If not provided, "
-            "no report is generated.",
+        "no report is generated.",
     )
     parser.add_argument(
         "-o",
         "--output_directory",
         type=Path,
         help="The path to the directory to save the report to. "
-        "If not provided, the input directory will be used."
+        "If not provided, the input directory will be used.",
     )
 
     args = parser.parse_args()

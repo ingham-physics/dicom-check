@@ -177,3 +177,4 @@ pyrightconfig.json
 
 testdata/
 font/
+.DS_Store
