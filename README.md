@@ -73,3 +73,8 @@ python run.py -t templates/generic-rt.json -r pdf testdata/HNSCC
 ```
 
 Check the `testdata/HNSCC/check_results.csv` for a summary of all checks performed.
+
+
+# 
+
+https://github.com/icometrix/dicom2nifti/issues/148
